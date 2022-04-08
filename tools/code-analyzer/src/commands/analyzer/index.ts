@@ -295,10 +295,10 @@ export default class Analyzer extends Command {
 		title: string
 	): Promise<void> {
 		if ('github' === output) {
-			let opt = '### Template changes:\\n';
+			let opt = '\\n\\n### Template changes:\\n';
 			for (const [key, value] of data) {
-				opt += `**file:** ${key}\\n`;
-				opt += `- ${value[0].toUpperCase()}: ${value[2]}\\n`;
+				opt += `- **file:** ${key}\\n`;
+				opt += `  - ${value[0].toUpperCase()}: ${value[2]}\\n`;
 				this.log(
 					`::${value[0]} file=${key},line=1,title=${value[1]}::${value[2]}`
 				);
@@ -331,16 +331,18 @@ export default class Analyzer extends Command {
 		title: string
 	): Promise<void> {
 		if ('github' === output) {
-			// ::set-output name=test::hello
-
-
+			let opt = '\\n\\n### New hooks:\\n';
 			for (const [key, value] of data) {
+				opt += `- **file:** ${key}\\n`;
 				for (const [k, v] of value) {
+					opt += `  - ${v[0].toUpperCase()}: ${v[2]}\\n`;
 					this.log(
 						`::${v[0]} file=${key},line=1,title=${v[1]} - ${k}::${v[2]}`
 					);
 				}
 			}
+
+			this.log(`::set-output name=hooks::${opt}`);
 		} else {
 			this.log(`\n## ${title}:`);
 			for (const [key, value] of data) {
