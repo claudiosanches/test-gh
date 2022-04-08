@@ -20,6 +20,7 @@ jobs:
     name: Add comment to hightlight changes
     needs: analyze
     runs-on: ubuntu-latest
+    if: needs.analyze.outputs.results
     steps:
       - name: Add comment
         uses: actions/github-script@v5
