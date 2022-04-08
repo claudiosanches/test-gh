@@ -295,11 +295,15 @@ export default class Analyzer extends Command {
 		title: string
 	): Promise<void> {
 		if ('github' === output) {
+			let opt = '';
 			for (const [key, value] of data) {
+				opt += `- ${value[0].toUpperCase()}: ${value[1]} | ${value[2]}\\\\n`;
 				this.log(
 					`::${value[0]} file=${key},line=1,title=${value[1]}::${value[2]}`
 				);
 			}
+
+			this.log(`::set-output name=templates::${opt}`);
 		} else {
 			this.log(`\n## ${title}:`);
 			for (const [key, value] of data) {
@@ -326,6 +330,9 @@ export default class Analyzer extends Command {
 		title: string
 	): Promise<void> {
 		if ('github' === output) {
+			// ::set-output name=test::hello
+
+
 			for (const [key, value] of data) {
 				for (const [k, v] of value) {
 					this.log(
