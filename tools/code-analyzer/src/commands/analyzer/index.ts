@@ -265,7 +265,7 @@ export default class Analyzer extends Command {
 		const hooks = await this.scanHooks(content, version);
 		// @todo: Scan for changes to database schema.
 
-		if (templates) {
+		if (templates.size) {
 			await this.printTemplateResults(
 				templates,
 				output,
@@ -275,10 +275,10 @@ export default class Analyzer extends Command {
 			this.log('No template changes found');
 		}
 
-		if (hooks) {
+		if (hooks.size) {
 			await this.printHookResults(hooks, output, 'HOOKS');
 		} else {
-			this.log('No template changes found');
+			this.log('No new hooks found');
 		}
 	}
 

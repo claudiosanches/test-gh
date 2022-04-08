@@ -13,3 +13,15 @@ jobs:
           pnpm install
       - name: Run analyzer
         run: ./tools/code-analyzer/bin/dev analyzer "$GITHUB_HEAD_REF" -s claudiosanches/test-gh
+      - name: Add comment
+        uses: actions/github-script@v5
+        with:
+          github-token: ${{ secrets.WC_BOT_TRIAGE_TOKEN }}
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '## New changes in this PR,\n\n\
+              Testing...'
+            })   
