@@ -6,7 +6,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       templates: ${{ steps.run.outputs.templates }}
-      hooks: ${{ steps.run.outputs.hooks }}
+      wphooks: ${{ steps.run.outputs.wphooks }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -21,7 +21,7 @@ jobs:
     name: Add comment to hightlight changes
     needs: analyze
     runs-on: ubuntu-latest
-    if: needs.analyze.outputs.templates || needs.analyze.outputs.hooks
+    if: needs.analyze.outputs.templates || needs.analyze.outputs.wphooks
     steps:
       - name: Add comment
         uses: actions/github-script@v5
@@ -32,5 +32,5 @@ jobs:
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: '## New changes in this PR${{ needs.analyze.outputs.templates }}${{ needs.analyze.outputs.hooks }}'
+              body: '## New changes in this PR${{ needs.analyze.outputs.templates }}${{ needs.analyze.outputs.wphooks }}'
             })

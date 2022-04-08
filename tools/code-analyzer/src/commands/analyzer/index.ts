@@ -342,7 +342,7 @@ export default class Analyzer extends Command {
 				}
 			}
 
-			this.log(`::set-output name=hooks::${opt}`);
+			this.log(`::set-output name=wphooks::${opt}`);
 		} else {
 			this.log(`\n## ${title}:`);
 			for (const [key, value] of data) {
