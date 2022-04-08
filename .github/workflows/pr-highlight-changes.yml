@@ -1,0 +1,19 @@
+name: Highlight templates and hooks changes
+on: pull_request
+defaults:
+  run:
+    shell: bash
+    working-directory: plugins/woocommerce
+jobs:
+  analyze:
+    name: Check pull request changes to highlight.
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code.
+        uses: actions/checkout@v2
+      - name: Install prerequisites.
+        run: |
+          npm install -g pnpm
+          pnpm install
+      - name: Run analyzer.
+        run: bash tools/code-analyzer/bin/dev analyzer "$GITHUB_HEAD_REF"
