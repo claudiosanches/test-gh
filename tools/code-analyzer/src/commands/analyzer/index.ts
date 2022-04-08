@@ -295,9 +295,10 @@ export default class Analyzer extends Command {
 		title: string
 	): Promise<void> {
 		if ('github' === output) {
-			let opt = '';
+			let opt = '### Template changes:\\n';
 			for (const [key, value] of data) {
-				opt += `- ${value[0].toUpperCase()}: ${value[1]} | ${value[2]}\\n`;
+				opt += `**file:** ${key}\\n`;
+				opt += `- ${value[0].toUpperCase()}: ${value[2]}\\n`;
 				this.log(
 					`::${value[0]} file=${key},line=1,title=${value[1]}::${value[2]}`
 				);
