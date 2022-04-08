@@ -12,10 +12,15 @@
  *
  * @see     https://docs.woocommerce.com/document/template-structure/
  * @package WooCommerce\Templates
- * @version 3.7.1
+ * @version 6.4.0
  */
 
 defined( 'ABSPATH' ) || exit;
+
+/**
+ * @since 6.4.0
+ */
+apply_filters( 'some_filter', true );
 
 ?>
 <?php do_action( 'woocommerce_widget_price_filter_start', $args ); ?>
