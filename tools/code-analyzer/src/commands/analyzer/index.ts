@@ -297,7 +297,7 @@ export default class Analyzer extends Command {
 		if ('github' === output) {
 			let opt = '';
 			for (const [key, value] of data) {
-				opt += `- ${value[0].toUpperCase()}: ${value[1]} | ${value[2]}\\\\n`;
+				opt += `- ${value[0].toUpperCase()}: ${value[1]} | ${value[2]}\\n`;
 				this.log(
 					`::${value[0]} file=${key},line=1,title=${value[1]}::${value[2]}`
 				);
