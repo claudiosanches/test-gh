@@ -5,8 +5,7 @@ jobs:
     name: Check pull request changes to highlight
     runs-on: ubuntu-latest
     outputs:
-      templates: ${{ steps.run.outputs.templates }}
-      wphooks: ${{ steps.run.outputs.wphooks }}
+      results: ${{ steps.results.outputs.results }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -17,6 +16,9 @@ jobs:
       - name: Run analyzer
         id: run
         run: ./tools/code-analyzer/bin/dev analyzer "$GITHUB_HEAD_REF" -o github -s claudiosanches/test-gh
+      - name: Print results
+        id: results
+        run: echo "::set-output name=results::${{ steps.run.outputs.templates }}${{ steps.run.outputs.wphooks }}"
   comment:
     name: Add comment to hightlight changes
     needs: analyze
