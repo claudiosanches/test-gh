@@ -480,7 +480,7 @@ export default class Analyzer extends Command {
 				);
 				let name = await this.getHookName(hookName![4]);
 				const kind = hookName![1] === 'do_action' ? 'action' : 'filter';
-				const message = `\`${name}\` introduced in ${version}`;
+				const message = `\'${name}\' introduced in ${version}`;
 				const title = `New ${kind} found`;
 
 				hooksList.set(name, ['NOTICE', title, message]);
