@@ -175,10 +175,10 @@ export default class Analyzer extends Command {
 		const filepath = join(tmpdir(), filename);
 
 		// Download patch.
-		const success = await this.downloadPatch(url, filepath);
-		if (!success) {
-			this.error('Failed to download patch!');
-		}
+		// const success = await this.downloadPatch(url, filepath);
+		// if (!success) {
+		// 	this.error('Failed to download patch!');
+		// }
 
 		const content = readFileSync(filepath).toString();
 
@@ -334,9 +334,9 @@ export default class Analyzer extends Command {
 			let opt = '\\n\\n### New hooks:\\n';
 			for (const [key, value] of data) {
 				if (value.size) {
-					opt += `- **file:** ${key}\\n`;
+					opt += `* **file:** ${key}\\n`;
 					for (const [k, v] of value) {
-						opt += `  - ${v[0].toUpperCase()}: ${v[2]}\\n`;
+						opt += `  * ${v[0].toUpperCase()}: ${v[2]}\\n`;
 						this.log(
 							`::${v[0]} file=${key},line=1,title=${v[1]} - ${k}::${v[2]}`
 						);
