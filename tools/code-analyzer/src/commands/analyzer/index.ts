@@ -331,12 +331,12 @@ export default class Analyzer extends Command {
 		title: string
 	): Promise<void> {
 		if ('github' === output) {
-			let opt = '\\n\\n### New hooks:\\n';
+			let opt = '\\n\\n### New hooks:';
 			for (const [key, value] of data) {
 				if (value.size) {
-					opt += `* **file:** ${key}\\n`;
+					opt += `\\n* **file:** ${key}`;
 					for (const [k, v] of value) {
-						opt += `  * ${v[0].toUpperCase()}: ${v[2]}\\n`;
+						opt += `\\n  * ${v[0].toUpperCase()}: ${v[2]}`;
 						this.log(
 							`::${v[0]} file=${key},line=1,title=${v[1]} - ${k}::${v[2]}`
 						);
