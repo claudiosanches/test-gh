@@ -333,12 +333,14 @@ export default class Analyzer extends Command {
 		if ('github' === output) {
 			let opt = '\\n\\n### New hooks:\\n';
 			for (const [key, value] of data) {
-				opt += `- **file:** ${key}\\n`;
-				for (const [k, v] of value) {
-					opt += `  - ${v[0].toUpperCase()}: ${v[2]}\\n`;
-					this.log(
-						`::${v[0]} file=${key},line=1,title=${v[1]} - ${k}::${v[2]}`
-					);
+				if (value.size) {
+					opt += `- **file:** ${key}\\n`;
+					for (const [k, v] of value) {
+						opt += `  - ${v[0].toUpperCase()}: ${v[2]}\\n`;
+						this.log(
+							`::${v[0]} file=${key},line=1,title=${v[1]} - ${k}::${v[2]}`
+						);
+					}
 				}
 			}
 
@@ -346,17 +348,19 @@ export default class Analyzer extends Command {
 		} else {
 			this.log(`\n## ${title}:`);
 			for (const [key, value] of data) {
-				this.log('FILE: ' + key);
-				this.log('---------------------------------------------------');
-				for (const [k, v] of value) {
-					this.log('HOOK: ' + k);
-					this.log(
-						'---------------------------------------------------'
-					);
-					this.log(` ${v[0].toUpperCase()} | ${v[1]} | ${v[2]}`);
-					this.log(
-						'---------------------------------------------------'
-					);
+				if (value.size) {
+					this.log('FILE: ' + key);
+					this.log('---------------------------------------------------');
+					for (const [k, v] of value) {
+						this.log('HOOK: ' + k);
+						this.log(
+							'---------------------------------------------------'
+						);
+						this.log(` ${v[0].toUpperCase()} | ${v[1]} | ${v[2]}`);
+						this.log(
+							'---------------------------------------------------'
+						);
+					}
 				}
 			}
 		}
@@ -476,14 +480,17 @@ export default class Analyzer extends Command {
 			for (const raw of results) {
 				// Extract hook name and type.
 				const hookName = raw.match(
-					/(do_action|apply_filters)\((\s+)?(\'|\")(.+)\)/
+					/([^\-])(.*)(do_action|apply_filters)\((\s+)?(\'|\")(.+)\)/
 				);
-				let name = await this.getHookName(hookName![4]);
-				const kind = hookName![1] === 'do_action' ? 'action' : 'filter';
+
+				let name = await this.getHookName(hookName![6]);
+				const kind = hookName![4] === 'do_action' ? 'action' : 'filter';
 				const message = `\'${name}\' introduced in ${version}`;
 				const title = `New ${kind} found`;
 
-				hooksList.set(name, ['NOTICE', title, message]);
+				if (!hookName![2].startsWith('-')) {
+					hooksList.set(name, ['NOTICE', title, message]);
+				}
 			}
 
 			report.set(filepath, hooksList);
