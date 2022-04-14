@@ -485,7 +485,7 @@ export default class Analyzer extends Command {
 
 				let name = await this.getHookName(hookName![6]);
 				const kind = hookName![4] === 'do_action' ? 'action' : 'filter';
-				const message = `\'${name}\' introduced in ${version}`;
+				const message = `\\'${name}\\' introduced in ${version}`;
 				const title = `New ${kind} found`;
 
 				if (!hookName![2].startsWith('-')) {
