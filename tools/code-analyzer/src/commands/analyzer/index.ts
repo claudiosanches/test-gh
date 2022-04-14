@@ -175,10 +175,10 @@ export default class Analyzer extends Command {
 		const filepath = join(tmpdir(), filename);
 
 		// Download patch.
-		// const success = await this.downloadPatch(url, filepath);
-		// if (!success) {
-		// 	this.error('Failed to download patch!');
-		// }
+		const success = await this.downloadPatch(url, filepath);
+		if (!success) {
+			this.error('Failed to download patch!');
+		}
 
 		const content = readFileSync(filepath).toString();
 
