@@ -265,7 +265,7 @@ export default class Analyzer extends Command {
 		const hooks = await this.scanHooks(content, version);
 		// @todo: Scan for changes to database schema.
 
-		if (templates) {
+		if (templates.size) {
 			await this.printTemplateResults(
 				templates,
 				output,
@@ -275,10 +275,10 @@ export default class Analyzer extends Command {
 			this.log('No template changes found');
 		}
 
-		if (hooks) {
+		if (hooks.size) {
 			await this.printHookResults(hooks, output, 'HOOKS');
 		} else {
-			this.log('No template changes found');
+			this.log('No new hooks found');
 		}
 	}
 
@@ -295,11 +295,16 @@ export default class Analyzer extends Command {
 		title: string
 	): Promise<void> {
 		if ('github' === output) {
+			let opt = '\\n\\n### Template changes:';
 			for (const [key, value] of data) {
+				opt += `\\n* **file:** ${key}`;
+				opt += `\\n  * ${value[0].toUpperCase()}: ${value[2]}`;
 				this.log(
 					`::${value[0]} file=${key},line=1,title=${value[1]}::${value[2]}`
 				);
 			}
+
+			this.log(`::set-output name=templates::${opt}`);
 		} else {
 			this.log(`\n## ${title}:`);
 			for (const [key, value] of data) {
@@ -326,27 +331,36 @@ export default class Analyzer extends Command {
 		title: string
 	): Promise<void> {
 		if ('github' === output) {
+			let opt = '\\n\\n### New hooks:';
 			for (const [key, value] of data) {
-				for (const [k, v] of value) {
-					this.log(
-						`::${v[0]} file=${key},line=1,title=${v[1]} - ${k}::${v[2]}`
-					);
+				if (value.size) {
+					opt += `\\n* **file:** ${key}`;
+					for (const [k, v] of value) {
+						opt += `\\n  * ${v[0].toUpperCase()}: ${v[2]}`;
+						this.log(
+							`::${v[0]} file=${key},line=1,title=${v[1]} - ${k}::${v[2]}`
+						);
+					}
 				}
 			}
+
+			this.log(`::set-output name=wphooks::${opt}`);
 		} else {
 			this.log(`\n## ${title}:`);
 			for (const [key, value] of data) {
-				this.log('FILE: ' + key);
-				this.log('---------------------------------------------------');
-				for (const [k, v] of value) {
-					this.log('HOOK: ' + k);
-					this.log(
-						'---------------------------------------------------'
-					);
-					this.log(` ${v[0].toUpperCase()} | ${v[1]} | ${v[2]}`);
-					this.log(
-						'---------------------------------------------------'
-					);
+				if (value.size) {
+					this.log('FILE: ' + key);
+					this.log('---------------------------------------------------');
+					for (const [k, v] of value) {
+						this.log('HOOK: ' + k);
+						this.log(
+							'---------------------------------------------------'
+						);
+						this.log(` ${v[0].toUpperCase()} | ${v[1]} | ${v[2]}`);
+						this.log(
+							'---------------------------------------------------'
+						);
+					}
 				}
 			}
 		}
@@ -466,14 +480,17 @@ export default class Analyzer extends Command {
 			for (const raw of results) {
 				// Extract hook name and type.
 				const hookName = raw.match(
-					/(do_action|apply_filters)\((\s+)?(\'|\")(.+)\)/
+					/([^\-])(.*)(do_action|apply_filters)\((\s+)?(\'|\")(.+)\)/
 				);
-				let name = await this.getHookName(hookName![4]);
-				const kind = hookName![1] === 'do_action' ? 'action' : 'filter';
-				const message = `'${name}' introduced in ${version}`;
+
+				let name = await this.getHookName(hookName![6]);
+				const kind = hookName![4] === 'do_action' ? 'action' : 'filter';
+				const message = `\\'${name}\\' introduced in ${version}`;
 				const title = `New ${kind} found`;
 
-				hooksList.set(name, ['NOTICE', title, message]);
+				if (!hookName![2].startsWith('-')) {
+					hooksList.set(name, ['NOTICE', title, message]);
+				}
 			}
 
 			report.set(filepath, hooksList);
